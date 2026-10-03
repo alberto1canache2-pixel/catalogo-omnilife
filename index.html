@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrición y Asesoría | Adrián Canache</title>
+    <style>
+        :root {
+            --primary: #4A148C; 
+            --secondary: #F3E5F5; 
+            --dark: #333333;
+            --white: #FFFFFF;
+            --whatsapp: #25D366;
+            --accent: #FF9800;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #FAFAFA; color: var(--dark); scroll-behavior: smooth;}
+        header { background: var(--white); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100;}
+        .logo { font-size: 22px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        nav a { margin-left: 20px; text-decoration: none; color: var(--dark); font-weight: 500; transition: color 0.3s; }
+        nav a:hover { color: var(--primary); }
+        
+        .hero { background: var(--secondary); padding: 60px 5%; text-align: center; }
+        .hero h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;}
+        .hero p { font-size: 1.1rem; color: #555; max-width: 600px; margin: 0 auto 25px auto; line-height: 1.6;}
+        
+        .container { padding: 40px 5%; }
+        
+        .affiliation-banner { background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%); color: var(--white); border-radius: 15px; padding: 40px; text-align: center; margin-top: 40px; box-shadow: 0 10px 20px rgba(255, 152, 0, 0.2); }
+        .affiliation-banner h2 { font-size: 2rem; margin-top: 0; margin-bottom: 15px; color: #fff;}
+        .affiliation-banner p { font-size: 1.1rem; margin-bottom: 10px; line-height: 1.5; }
+        .affiliation-banner .btn-large { display: inline-block; background: var(--primary); color: var(--white); font-size: 1.2rem; padding: 15px 30px; margin-top: 20px; text-decoration: none; border-radius: 30px; font-weight: bold; transition: transform 0.3s, background 0.3s;}
+        .affiliation-banner .btn-large:hover { background: #380b6b; transform: scale(1.05); }
+
+        .search-container { text-align: center; margin-bottom: 40px; }
+        .search-container input { padding: 15px 25px; width: 100%; max-width: 500px; border-radius: 30px; border: 2px solid var(--primary); outline: none; font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+        .product-card { background: var(--white); border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.3s; cursor: pointer; border: 1px solid #eee; display: flex; flex-direction: column; justify-content: space-between;}
+        .product-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 8px 25px rgba(74, 20, 140, 0.15);}
+        .product-card img { max-width: 100%; height: 180px; object-fit: contain; margin-bottom: 15px; }
+        .product-card h3 { margin: 10px 0; font-size: 1.1rem; color: var(--primary); }
+        .btn { background: var(--primary); color: var(--white); border: none; padding: 12px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: background 0.3s; width: 100%; font-size: 1rem;}
+        .btn:hover { background: #6A1B9A; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 200; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;}
+        .modal-content { background: var(--white); padding: 30px; border-radius: 15px; max-width: 500px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto;}
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #999; line-height: 1;}
+        .trust-msg { background: #E8F5E9; color: #2E7D32; padding: 15px; border-radius: 8px; font-size: 0.95rem; margin: 20px 0; border-left: 4px solid var(--whatsapp); font-weight: 500;}
+        .btn-whatsapp { background: var(--whatsapp); margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;}
+        .btn-whatsapp:hover { background: #1da851; }
+
+        .chat-toggle-btn { position: fixed; top: 80px; right: 20px; width: 60px; height: 60px; background: var(--accent); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4); cursor: pointer; z-index: 140; transition: transform 0.3s;}
+        .chat-toggle-btn:hover { transform: scale(1.1); }
+        .chat-toggle-btn svg { width: 30px; height: 30px; fill: white; }
+
+        .chat-widget { display: none; position: fixed; top: 150px; right: 20px; width: 380px; background: var(--white); border-radius: 15px; box-shadow: 0 5px 30px rgba(0,0,0,0.3); flex-direction: column; overflow: hidden; z-index: 150;}
+        .chat-header { background: var(--primary); color: var(--white); padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;}
+        .minimize-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; line-height: 1;}
+        .chat-body { height: 400px; padding: 15px; overflow-y: auto; background: #fafafa; display: flex; flex-direction: column; gap: 12px;}
+        .msg { padding: 12px 15px; border-radius: 15px; max-width: 85%; font-size: 0.9rem; line-height: 1.4;}
+        .msg.bot { background: var(--secondary); align-self: flex-start; color: var(--dark); border-bottom-left-radius: 2px;}
+        .msg.user { background: var(--primary); color: var(--white); align-self: flex-end; border-bottom-right-radius: 2px;}
+        
+        .chat-suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; margin-bottom: 10px; }
+        .suggestion-chip { background: var(--white); color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; text-align: left; }
+        .suggestion-chip:hover { background: var(--primary); color: var(--white); }
+
+        .chat-input { display: flex; border-top: 1px solid #eee; background: var(--white);}
+        .chat-input input { flex: 1; padding: 15px; border: none; outline: none; font-size: 0.95rem;}
+        .chat-input button { padding: 15px 20px; background: var(--white); border: none; color: var(--primary); font-weight: bold; cursor: pointer; font-size: 0.95rem;}
+        .chat-btn-link { display: block; text-align: center; background: var(--accent); color: white !important; text-decoration: none; padding: 10px; border-radius: 20px; margin-top: 10px; font-weight: bold;}
+
+        footer { background: var(--dark); color: var(--white); text-align: center; padding: 40px 5%; margin-top: 40px;}
+        footer h3 { color: var(--secondary); margin-bottom: 15px;}
+        footer a { color: var(--accent); text-decoration: none; font-weight: bold;}
+        
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 15px; }
+            .chat-toggle-btn { top: auto; bottom: 20px; }
+            .chat-widget { top: auto; bottom: 90px; width: 90%; right: 5%; height: 75vh;}
+            .chat-body { height: calc(100% - 120px); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#4A148C"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+            Asesoría Omnilife | Adrián Canache
+        </div>
+        <nav>
+            <a href="#catalogo">Catálogo</a>
+            <a href="#afiliacion">Afiliación</a>
+            <a href="#contacto">Contacto</a>
+            <a href="https://www.tiktok.com/@adriano538?_r=1&_t=ZS-9A1yQzi8jo4" target="_blank">TikTok</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Transforma tu estilo de vida</h1>
+        <p>Encuentra el equilibrio perfecto con nuestra línea de suplementos nutricionales. Te asesoro paso a paso para que elijas lo mejor para tu energía, control de peso y defensas.</p>
+        <button class="btn" style="width: auto; background: var(--accent);" onclick="document.getElementById('catalogo').scrollIntoView();">Explorar Productos</button>
+    </section>
+
+    <section class="container" id="afiliacion">
+        <div class="affiliation-banner">
+            <h2>Tu bienestar y tu futuro comienzan hoy</h2>
+            <p>¡Inversión inteligente, beneficios para toda la vida! Compra o afíliate y obtén un <strong>descuento desde el 25%</strong> en cualquier producto.</p>
+            <p>Recibirás un <strong>Kit de Inscripción Omnilife</strong> con todo lo que necesitas para comenzar tu propio negocio.</p>
+            <a href="https://portal.omnilife.com/registro-cliente?distributor_code=570087735CHA&country_code=COL&lang=es" target="_blank" class="btn-large">Quiero inscribirme ahora</a>
+        </div>
+    </section>
+
+    <section class="container" id="catalogo">
+        <h2 style="text-align:center; margin-bottom: 20px; color: var(--primary);">Catálogo Oficial de Productos</h2>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre o necesidad (ej. bajar de peso, cansancio, defensas, digestión)..." onkeyup="filterProducts()">
+        </div>
+        <div class="catalog" id="catalog-container"></div>
+    </section>
+
+    <footer id="contacto">
+        <h3>Atención Exclusiva y Personalizada</h3>
+        <p>Comunícate directamente con tu asesor <strong>Adrián Canache</strong>.</p>
+        <p>WhatsApp: <strong>+58 412-9880606</strong></p>
+        <p>Sígueme en <a href="https://www.tiktok.com/@adriano538?_r=1&_t=ZS-9A1yQzi8jo4" target="_blank">TikTok</a> para tips y recomendaciones de salud.</p>
+    </footer>
+
+    <!-- Modal Detalles -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            <h2 id="m-title" style="color: var(--primary); margin-top: 0;"></h2>
+            <div style="text-align: center;">
+                <img id="m-img" src="" style="max-width:100%; height:200px; object-fit:contain; margin: 15px 0;">
+            </div>
+            <p style="line-height: 1.6; color: #444;"><strong style="color: var(--dark);">Análisis y Beneficios:</strong> <span id="m-desc"></span></p>
+            <div class="trust-msg" id="trust-msg">
+                Genial, qué bueno que te hayas decidido. Nuestras compras se manejan de manera segura a través de nuestro asesor. Puedes preguntarle cualquier cosa antes de concretar tu compra.
+            </div>
+            <button class="btn btn-whatsapp" onclick="iniciarCompra()">Contactar a Adrián</button>
+        </div>
+    </div>
+
+    <!-- Botón Flotante Chat -->
+    <div class="chat-toggle-btn" onclick="toggleChat()">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-header">
+            Asistente Experto Omnilife
+            <button class="minimize-btn" onclick="toggleChat()">−</button>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="msg bot">¡Hola! Soy el asistente de Adrián Canache. Analizaré tu consulta para darte la mejor recomendación. Selecciona una opción o escríbeme:</div>
+            
+            <div class="chat-suggestions" id="chat-suggestions">
+                <button class="suggestion-chip" onclick="askSuggestion('¿Qué me ayuda a bajar de peso y medidas?')">¿Qué me ayuda a bajar de peso?</button>
+                <button class="suggestion-chip" onclick="askSuggestion('Necesito algo para tener más energía y no dormir')">Necesito más energía</button>
+                <button class="suggestion-chip" onclick="askSuggestion('Tengo problemas de gastritis, acidez y mala digestión')">Problemas de gastritis / digestión</button>
+                <button class="suggestion-chip" onclick="askSuggestion('Quiero fortalecer mis defensas y sistema inmune')">Quiero subir mis defensas</button>
+                <button class="suggestion-chip" onclick="askSuggestion('¿Cómo me afilio a Omnilife para vender o tener descuento?')">¿Cómo me afilio a Omnilife?</button>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chat-input" placeholder="Haz tu consulta médica o de negocio..." onkeypress="if(event.key === 'Enter') sendMsg()">
+            <button onclick="sendMsg()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        // Array de productos utilizando nombres de archivos locales
+        const products = [
+            /* SISTEMA INMUNOLÓGICO Y RESPIRATORIO */
+            { id: 1, name: "Omniplus Frutas (940ml)", image: "2350330.png", desc: "Eleva el sistema inmunológico, protege las vías respiratorias y cubre deficiencias.", detailed_benefit: "es nuestra base nutricional diaria. Está diseñado para fortalecer el sistema inmunológico, cubrir deficiencias de nutrientes y mejorar la respuesta de tu organismo ante enfermedades.", keywords: ["defensas", "gripe", "inmunologico", "vitaminas", "enfermedad", "resfriado", "asma", "alergia", "virus", "tos", "enfermo", "debilidad"] },
+            { id: 2, name: "Omniplus Naranja (600ml)", image: "2350401.png", desc: "Eleva el sistema inmunológico en presentación Naranja.", detailed_benefit: "es nuestra base nutricional diaria con delicioso sabor naranja. Cubre deficiencias de nutrientes y fortalece el sistema inmunológico de manera rápida.", keywords: ["defensas", "gripe", "inmunologico", "vitaminas", "enfermedad", "resfriado", "asma", "alergia", "virus"] },
+            { id: 3, name: "Omniplus Frutas (600ml)", image: "2350430.png", desc: "Caja de sobres sabor frutas para el sistema inmune.", detailed_benefit: "presentación en sobres para llevar a todos lados. Ideal para proteger las vías respiratorias y aumentar las defensas del organismo.", keywords: ["defensas", "gripe", "inmunologico", "sobres", "vitaminas", "resfriado"] },
+            { id: 4, name: "Omniplus Gummies", image: "2395901_render.webp", desc: "Gomitas masticables para elevar las defensas de forma deliciosa.", detailed_benefit: "versión en gomitas de nuestro producto estrella. Excelentes para elevar las defensas de niños y adultos, aportando vitaminas esenciales de manera muy práctica.", keywords: ["niños", "defensas", "gomitas", "vitaminas", "dulce", "masticables", "gripe"] },
+            { id: 5, name: "One C Mix", image: "6305929.png", desc: "Potente antioxidante. Protege células y promueve el colágeno.", detailed_benefit: "es un potente escudo antioxidante (Glutatión + Vitamina C). Protege las vías respiratorias, previene resfriados y promueve la producción natural de colágeno para piel y células.", keywords: ["antioxidante", "gripe", "colageno", "respiratorio", "piel", "uñas", "vitamina c", "resfriado", "envejecimiento"] },
+            { id: 6, name: "Uzo Supreme", image: "Uzo_3806816.webp", desc: "Inmunoterapia de alta tecnología.", detailed_benefit: "aumenta la actividad de las células que defienden al cuerpo (células NK). Es un apoyo nutricional ideal en enfermedades degenerativas o autoinmunes gracias a su formulación con salvado de arroz.", keywords: ["inmunoterapia", "defensas altas", "enfermedad grave", "celulas", "autoinmune", "degenerativa", "tumor"] },
+            
+            /* ENERGÍA Y SISTEMA NERVIOSO */
+            { id: 7, name: "Magnus / Biocros", image: "2023500___.png", desc: "Proporciona de 6 a 8 horas de energía física sostenida.", detailed_benefit: "es un excelente energizante natural. Te proporcionará entre 6 y 8 horas de energía continua, combatiendo la fatiga física y mental mientras mejora notablemente tu estado de alerta y estado de ánimo.", keywords: ["energia", "cansancio", "sueño", "fatiga", "debil", "animo", "agotado", "pereza", "dormido", "sin fuerzas", "trabajar", "rendimiento", "flojera"] },
+            { id: 8, name: "Optimus", image: "2505711.png", desc: "Nutrición cerebral. Mejora la memoria y la concentración.", detailed_benefit: "aporta nutrición directa a tu sistema nervioso central. Está diseñado para mejorar la memoria, el aprendizaje y la concentración, y es un excelente apoyo nutricional para reducir dolores de cabeza y migrañas.", keywords: ["memoria", "cerebro", "concentracion", "dolor de cabeza", "migraña", "estudiar", "aprendizaje", "olvido", "nervioso", "pensar", "jaqueca"] },
+            { id: 9, name: "Optimus Jamaica", image: "2550614_Optimus_35_ANV.webp", desc: "Nutrición cerebral sabor Jamaica.", detailed_benefit: "aporta los mismos beneficios de oxigenación y nutrición cerebral para memoria y dolores de cabeza, en un delicioso sabor a jamaica líquido.", keywords: ["memoria", "cerebro", "concentracion", "dolor de cabeza", "migraña", "liquido", "jamaica"] },
+            { id: 10, name: "Starbien", image: "3000730_v1.png", desc: "Relajante. Calma la ansiedad y combate el estrés diario.", detailed_benefit: "actúa como un equilibrador emocional y físico. Te ayuda a calmar la ansiedad, relaja la tensión acumulada en los músculos y combate el estrés diario aportando bienestar sin producir sueño.", keywords: ["estres", "ansiedad", "nervios", "calambres", "tension", "preocupacion", "relajante", "bienestar", "paz", "alterado"] },
+            { id: 11, name: "Flu-Y", image: "8453000-35aniv-1.webp", desc: "Cápsulas para reducir estados de ansiedad y estrés.", detailed_benefit: "es un apoyo directo contra el estrés. Sus ingredientes (como el magnesio) contribuyen a la relajación muscular y ayudan a reducir estados de ansiedad y tensión severa.", keywords: ["estres", "ansiedad", "relajacion", "nervios", "paz", "capsulas", "magnesio", "tension"] },
+            { id: 12, name: "Gummies Mimis", image: "4095921.jpg", desc: "Gomitas para relajación nocturna y conciliar el sueño.", detailed_benefit: "promueven la relajación nocturna. Te apoyan reduciendo la tensión acumulada durante el día para que puedas conciliar un sueño profundo y reparador.", keywords: ["dormir", "insomnio", "sueño", "desvelo", "noche", "descanso", "no puedo dormir", "relajacion"] },
+            { id: 13, name: "Ego 10", image: "4650609_Ego_10_30_Anv.webp", desc: "Bebida energizante rápida.", detailed_benefit: "es una bebida líquida energizante de acción rápida. Ideal para recuperar fuerzas de inmediato y aumentar el rendimiento físico y mental en momentos de exigencia.", keywords: ["energia", "cansancio rapido", "bebida", "fuerza", "agotamiento", "despierto", "alerta"] },
+
+            /* CONTROL DE PESO */
+            { id: 14, name: "Cafezzino Plus", image: "Cafezzino_5145932.webp", desc: "Sustituto de café que apoya el control de peso.", detailed_benefit: "es ideal para el control de peso. Ayuda a metabolizar las grasas generando un efecto termogénico, mejora el tránsito digestivo y actúa como un poderoso apoyo para perder tallas, con delicioso sabor a café.", keywords: ["peso", "grasa", "adelgazar", "rebajar", "cafe", "quemar", "metabolismo", "tallas", "gordo", "obesidad", "bajar peso", "medidas"] },
+            { id: 15, name: "Cafezzino Sin Endulzar", image: "5177632_1.png", desc: "Café termogénico líquido sin endulzar.", detailed_benefit: "combina los beneficios del café verde termogénico para quemar grasa, en una presentación práctica sin endulzantes añadidos.", keywords: ["peso", "grasa", "adelgazar", "rebajar", "cafe amargo", "quemar", "tallas", "gordo"] },
+            { id: 16, name: "Thermogen Coffee", image: "3304732.png", desc: "Café termogénico clásico.", detailed_benefit: "estimula la termogénesis en el cuerpo para utilizar las reservas de grasa como energía y generar saciedad.", keywords: ["peso", "grasa", "adelgazar", "rebajar", "cafe", "quemar", "tallas", "gordo"] },
+            { id: 17, name: "Thermogen Coffee de Olla", image: "2904727.png", desc: "Café termogénico sabor tradicional de olla.", detailed_benefit: "todas las propiedades quema-grasa de nuestra línea de cafés, con el inconfundible sabor a café de olla tradicional (con canela).", keywords: ["peso", "grasa", "adelgazar", "rebajar", "cafe de olla", "canela", "quemar", "tallas"] },
+            { id: 18, name: "Teatino Limón", image: "3505605.png", desc: "Bebida termogénica metabólica.", detailed_benefit: "es una potente bebida termogénica sabor limón. Estimula a tu cuerpo para que utilice las reservas de grasa acumulada como fuente primaria de energía, promoviendo la reducción de medidas.", keywords: ["te", "termogenico", "grasa acumulada", "medidas", "rebajar rapido", "tallas", "obesidad", "quemar grasa", "limon", "bajar de peso"] },
+            { id: 19, name: "Teatino Maracuyá", image: "3505609.jpg", desc: "Té termogénico sabor maracuyá.", detailed_benefit: "ayuda a metabolizar carbohidratos y atacar la grasa acumulada, con extracto de café verde y un delicioso sabor a maracuyá.", keywords: ["te", "termogenico", "grasa acumulada", "medidas", "rebajar rapido", "tallas", "obesidad", "maracuya"] },
+            { id: 20, name: "Teatino Durazno", image: "Teatino_durazno_3505608.webp", desc: "Té termogénico sabor durazno.", detailed_benefit: "ideal para tomar frío o caliente. Acelera el metabolismo de los carbohidratos y estimula la quema de grasa localizada.", keywords: ["te", "termogenico", "grasa acumulada", "medidas", "rebajar rapido", "tallas", "durazno"] },
+            { id: 21, name: "Dolce Vita (Polvo)", image: "4404710.png", desc: "Regula los picos de azúcar.", detailed_benefit: "es el suplemento perfecto para regular los picos de glucosa en la sangre. Reduce drásticamente la ansiedad por comer dulces, harinas o pan, siendo un apoyo ideal para controlar el metabolismo.", keywords: ["azucar", "glucosa", "diabetes", "dulces", "ansiedad", "pan", "harinas", "antojos", "comer mucho", "insulina"] },
+            { id: 22, name: "Dolce Vita (Tabletas)", image: "4432900-35-aniv-1.webp", desc: "Control de glucosa en prácticas tabletas.", detailed_benefit: "ofrece los mismos beneficios de control de glucosa y reducción de antojos por carbohidratos, en una cómoda presentación de tabletas.", keywords: ["azucar", "glucosa", "diabetes", "dulces", "ansiedad", "tabletas", "pastillas", "insulina"] },
+
+            /* SALUD DIGESTIVA */
+            { id: 23, name: "Fiber'N Plus", image: "1502208.png", desc: "Facilita el tránsito intestinal y protege la flora.", detailed_benefit: "ofrece una limpieza digestiva profunda. Facilita el tránsito intestinal, combate el estreñimiento crónico, protege tu flora bacteriana con probióticos y ayuda a atrapar las grasas perjudiciales.", keywords: ["estreñimiento", "transito", "flora", "baño", "evacuar", "colon", "pesadez", "gases", "digestion", "digestivo", "indigestion", "inflamacion", "fibra"] },
+            { id: 24, name: "Aloe Beta (Piña 960ml)", image: "35_Aniversario_render.webp", desc: "Desinflama, cicatriza y purifica.", detailed_benefit: "actúa como un poderoso desintoxicante y cicatrizante. Desinflama tejidos internos, limpia el tracto digestivo y calma rápidamente problemas como gastritis, acidez o irritación.", keywords: ["gastritis", "acidez", "ardor", "reflujo", "ulcera", "desinflamar", "cicatrizar", "desintoxicar", "estomago irritado", "sabila", "purificar"] },
+            { id: 25, name: "Aloe Beta (Caja Sobres)", image: "4208604.jpg", desc: "Sábila en polvo para preparar.", detailed_benefit: "todos los beneficios desintoxicantes, desinflamatorios y cicatrizantes del Aloe Beta en una práctica presentación en polvo para preparar en cualquier lugar.", keywords: ["gastritis", "acidez", "ardor", "reflujo", "ulcera", "desinflamar", "polvo", "sobres"] },
+            { id: 26, name: "Aloe Beta (Botella 200ml)", image: "4250604_245x245.webp", desc: "Botella personal de Aloe Beta.", detailed_benefit: "alivio inmediato para la acidez y gastritis en una botella pequeña lista para tomar.", keywords: ["gastritis", "acidez", "ardor", "reflujo", "ulcera", "desinflamar", "botella pequeña"] },
+            { id: 27, name: "Kolina", image: "1850610_Kolina_35_ANV.webp", desc: "Controla microorganismos nocivos.", detailed_benefit: "apoya directamente tu salud digestiva. Su fórmula ayuda a controlar el crecimiento de microorganismos nocivos como hongos (Cándida) y bacterias perjudiciales en el intestino.", keywords: ["candida", "hongos", "bacterias", "infeccion", "flora", "digestivo", "microorganismos"] },
+            { id: 28, name: "Probiotic", image: "6724761.jpg", desc: "Aporta bacterias beneficiosas para el intestino.", detailed_benefit: "fortalece la salud y equilibrio intestinal. Aporta una dosis masiva de bacterias beneficiosas para mejorar la digestión, asimilar nutrientes y fortalecer el sistema inmunológico desde el estómago.", keywords: ["digestion", "bacterias", "intestino", "colon", "flora", "probioticos", "inmunidad intestinal"] },
+            { id: 29, name: "Ego Frutas", image: "Ego_frutas_omnilife_4850500.jpg", desc: "Protector hepático en bebida gasificada.", detailed_benefit: "es el mejor protector hepático. Apoya las funciones depurativas de tu hígado, siendo ideal para ayudarte a digerir comidas muy pesadas y evitar la pesadez estomacal.", keywords: ["higado", "resaca", "digestion pesada", "hepatico", "depurativo", "comida pesada", "gases", "bebida gasificada"] },
+
+            /* SISTEMA CARDIOVASCULAR, MUSCULAR Y ÓSEO */
+            { id: 30, name: "Power Maker", image: "Power_Maker_OMNILIFE_2603201.webp", desc: "Tonifica músculos y regenera tejidos.", detailed_benefit: "es un regenerador celular de alto impacto. Estimula la hormona de crecimiento, lo que tonifica la masa muscular, fortalece huesos, ligamentos y tendones, y apoya el sistema hormonal y circulatorio.", keywords: ["musculos", "ligamentos", "tendones", "articulaciones", "lesion", "potencia", "sexual", "hormonal", "circulacion", "gimnasio", "desgarre", "regenerar tejidos"] },
+            { id: 31, name: "Aqtúa Supreme", image: "Aqtua_OMNILIFE_3905934_.webp", desc: "Mejora el rendimiento del corazón y aporta energía celular.", detailed_benefit: "apoya directamente la nutrición cardiovascular. Contiene Coenzima QH para retrasar el envejecimiento celular, mejorar el rendimiento del corazón, favorecer la resistencia física y ser un poderoso antioxidante.", keywords: ["corazon", "cardiovascular", "infarto", "presion", "tension", "antiedad", "rendimiento", "celulas", "coenzima", "resistencia"] },
+            { id: 32, name: "Estop Plus", image: "Estop_1301990.webp", desc: "Ayuda a mantener niveles saludables de colesterol.", detailed_benefit: "es ideal para la limpieza y salud arterial. Ayuda a bloquear la absorción del colesterol malo en la sangre y protege el corazón manteniendo niveles saludables de triglicéridos.", keywords: ["colesterol", "trigliceridos", "arterias", "venas", "lipidos", "grasa en sangre", "tapadas", "infarto", "circulacion"] },
+            { id: 33, name: "Omniost", image: "https://via.placeholder.com/250x250/E1BEE7/4A148C?text=Omniost", desc: "Fija el calcio en los huesos.", detailed_benefit: "es nutrición especializada para tu estructura ósea. Gracias a su aporte de Vitamina K2, fósforo, magnesio y zinc, garantiza que el calcio se fije directamente en los huesos, previniendo osteopenia y osteoporosis.", keywords: ["huesos", "osteoporosis", "osteopenia", "calcio", "fractura", "sistema oseo", "descalcificacion", "articulaciones"] },
+            { id: 34, name: "Umarina", image: "Umarina_OMEGA_OMNILIFE.webp", desc: "Suplementación de Omega-3.", detailed_benefit: "apoya la salud cardiovascular y neurológica mediante una suplementación de alta calidad de ácidos grasos Omega-3. Ideal para reducir inflamaciones crónicas y nutrir el cerebro.", keywords: ["omega 3", "cardiovascular", "inflamacion", "cerebro", "corazon", "pescado", "aceite", "memoria"] },
+            { id: 35, name: "Omnid", image: "OMNID_5695922.webp", desc: "Fortalece huesos y sistema inmune.", detailed_benefit: "suplemento en gomitas rico en vitamina D. Ofrece un apoyo nutricional específico para fortalecer la estructura de los huesos, regular el sistema inmune y apoyar el metabolismo celular.", keywords: ["huesos", "inmune", "vitaminas", "metabolismo", "vitamina d", "calcio"] },
+            
+            /* NUTRICIÓN ESPECIALIZADA Y COMPLETA */
+            { id: 36, name: "Super Mix", image: "3178516.png", desc: "Alimento completo con hierro de alta absorción.", detailed_benefit: "es un alimento completo y balanceado. Combate eficazmente la anemia gracias a su hierro de alta absorción, siendo perfecto para casos de desnutrición, debilidad extrema o como reemplazo nutritivo.", keywords: ["anemia", "desnutricion", "hierro", "peso bajo", "flaco", "alimento", "nutricion", "batido completo", "debilidad extrema", "subir de peso"] },
+            { id: 37, name: "Shake (Fresa)", image: "7170921.png", desc: "Sustituye comidas generando saciedad.", detailed_benefit: "es el complemento perfecto para tu control de peso. Sustituye comidas pesadas aportando vitaminas esenciales y proteínas, generando gran saciedad con muy bajas calorías.", keywords: ["cena", "desayuno", "dieta", "saciedad", "reemplazo", "batido", "hambre", "proteina", "sustituto"] },
+            { id: 38, name: "Shake (Cookies & Cream)", image: "7170943.png", desc: "Sustituye comidas sabor galleta.", detailed_benefit: "aporta todos los beneficios nutricionales y de saciedad del Shake, en un exquisito sabor a Cookies & Cream para evitar los antojos de dulces.", keywords: ["cena", "desayuno", "dieta", "saciedad", "reemplazo", "batido", "hambre", "galleta"] },
+            { id: 39, name: "Homo Plus", image: "Homo_plus_evo_1708034.jpg", desc: "Salud integral masculina.", detailed_benefit: "brinda protección integral para el hombre. Nutre el sistema reproductor, previene problemas o infecciones en las vías urinarias y es fundamental para la salud y protección de la próstata.", keywords: ["hombre", "prostata", "urinario", "masculino", "orina", "infeccion", "fertilidad", "esperma", "reproductor"] },
+            { id: 40, name: "Omniviu Supreme", image: "5827415.png", desc: "Cuidado preventivo de ojos y visión.", detailed_benefit: "está diseñado para el cuidado preventivo de tus ojos. Protege contra la luz azul de las pantallas, mejora la agudeza visual y ayuda a retrasar el desgaste macular y problemas de cataratas.", keywords: ["ojos", "vista", "cataratas", "vision", "luz azul", "pantallas", "ver", "macula", "ceguera", "lentes"] },
+            { id: 41, name: "Ego Plant", image: "1260600-35aniv-1.webp", desc: "Diurético natural para limpieza renal.", detailed_benefit: "es tu aliado para la limpieza renal. Funciona como un diurético natural que te ayuda a expulsar líquidos retenidos, desinflama las vías urinarias y es un gran apoyo para disolver cálculos.", keywords: ["riñones", "renal", "calculos", "piedras", "orina", "liquidos retenidos", "vias urinarias", "diuretico", "infeccion urinaria"] },
+            { id: 42, name: "Ego Life (Caja / Botella)", image: "Ego_life_4950433.webp", desc: "Rehidratación celular inteligente.", detailed_benefit: "rehidrata las células de forma superior al agua común o bebidas deportivas. Repone sales minerales perdidas tras cuadros de fiebre, diarrea, o ejercicio extremo, equilibrando tu temperatura.", keywords: ["hidratacion", "sed", "fiebre", "diarrea", "ejercicio", "minerales", "sales", "electrolitos", "deporte", "sudor"] },
+            { id: 43, name: "FX Manzana", image: "5350513-35aniv-1.webp", desc: "Bebida refrescante y gasificada con vitaminas.", detailed_benefit: "una excelente alternativa saludable a los refrescos convencionales. Es una bebida refrescante y ligeramente gasificada que aporta vitaminas sin las calorías vacías del azúcar industrial.", keywords: ["refresco", "bebida", "sed", "refrescante", "manzana", "gaseosa sana"] },
+            
+            /* PRODUCTOS MENCIONADOS EN LOS PDF SIN IMAGEN ESPECÍFICA PROPORCIONADA */
+            { id: 44, name: "Fem Plus", image: "https://via.placeholder.com/250x250/F8BBD0/880E4F?text=Fem+Plus", desc: "Armonía y salud integral femenina.", detailed_benefit: "está diseñado para regular desequilibrios hormonales en la mujer. Disminuye cólicos menstruales, alivia síntomas de la menopausia (bochornos) y favorece el crecimiento de cabello y mejora de la piel.", keywords: ["mujer", "femenino", "hormonas", "menstruacion", "colicos", "menopausia", "bochornos", "ovarios", "quistes"] },
+            { id: 45, name: "V-Kids", image: "https://via.placeholder.com/250x250/B3E5FC/01579B?text=V-Kids", desc: "Nutrición infantil completa.", detailed_benefit: "refuerza las defensas y apoya el crecimiento sano de los niños. Además, gracias a su aporte de Omega 3 (DHA), favorece directamente el desarrollo cognitivo y cerebral infantil.", keywords: ["niños", "infantil", "crecimiento", "desarrollo", "defensas niños", "cerebro infantil", "dha", "colegio"] },
+            { id: 46, name: "Pump", image: "https://via.placeholder.com/250x250/C8E6C9/1B5E20?text=Pump+Proteina", desc: "Proteína para aumento de masa muscular.", detailed_benefit: "es una proteína especializada para el rendimiento deportivo. Ayuda a aumentar la masa muscular magra y favorece una recuperación rápida después del entrenamiento.", keywords: ["proteina", "masa muscular", "musculo", "gimnasio", "entrenamiento", "recuperacion", "deporte"] },
+            { id: 47, name: "Creatina Omnilife", image: "https://via.placeholder.com/250x250/FFECB3/F57F17?text=Creatina", desc: "Alto rendimiento y energía explosiva.", detailed_benefit: "mejora la fuerza muscular, aumenta la capacidad de entrenamiento y favorece la energía explosiva física para atletas de alto rendimiento.", keywords: ["creatina", "fuerza", "musculo", "gimnasio", "energia explosiva", "entrenamiento pesado", "rendimiento"] }
+        ];
+
+        let selectedProduct = '';
+
+        function displayProducts(productArray) {
+            const container = document.getElementById('catalog-container');
+            container.innerHTML = ''; 
+            if(productArray.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:1.1rem;">No se encontraron productos. Intenta buscar en el chat con el Asistente.</p>';
+                return;
+            }
+            productArray.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/200?text=Producto'">
+                    <h3>${p.name}</h3>
+                    <button class="btn" onclick="openModal(${p.id})">Ver Análisis</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        displayProducts(products);
+
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filtered = products.filter(p => {
+                const searchString = (p.name + " " + p.desc + " " + p.keywords.join(" ")).toLowerCase();
+                return searchString.includes(query);
+            });
+            displayProducts(filtered);
+        }
+
+        function openModal(id) {
+            const p = products.find(x => x.id === id);
+            selectedProduct = p.name;
+            document.getElementById('m-title').innerText = p.name;
+            document.getElementById('m-img').src = p.image;
+            document.getElementById('m-desc').innerText = p.detailed_benefit;
+            document.getElementById('productModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        function iniciarCompra() {
+            const phone = "584129880606";
+            const text = encodeURIComponent(`Hola Adrián, estuve revisando tu página y me interesa el producto ${selectedProduct}. ¿Podrías asesorarme para concretar la compra?`);
+            window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        }
+
+        function toggleChat() {
+            const chat = document.getElementById('chatWidget');
+            chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function askSuggestion(question) {
+            document.getElementById('chat-input').value = question;
+            document.getElementById('chat-suggestions').style.display = 'none';
+            sendMsg();
+        }
+
+        function sendMsg() {
+            const input = document.getElementById('chat-input');
+            const txt = input.value.trim().toLowerCase();
+            if(!txt) return;
+
+            addChatMsg(input.value, 'user');
+            input.value = '';
+            document.getElementById('chat-suggestions').style.display = 'none';
+
+            setTimeout(() => {
+                // 1. EVALUAR INTENCIÓN DE AFILIACIÓN (Prioridad)
+                const affilWords = ['afiliar', 'afiliarme', 'afilio', 'vender', 'promotor', 'patrocinante', 'negocio', 'inscribir', 'inscribirme', 'inscribo', 'unirme', 'trabajar', 'ingresos', 'membresia', 'suscripcion', 'descuento'];
+                
+                const isAffiliation = affilWords.some(word => {
+                    const regex = new RegExp(`\\b${word}\\b`, 'i');
+                    return regex.test(txt);
+                });
+
+                if (isAffiliation) {
+                    let reply = "¡Qué excelente decisión! Tu bienestar y tu futuro comienzan hoy. Al afiliarte obtienes un **descuento desde el 25%** en todas tus compras y recibes tu Kit de Inscripción con herramientas para tu negocio. <br><br>Haz clic en este botón para unirte bajo mi código de patrocinador:<br><a href='https://portal.omnilife.com/registro-cliente?distributor_code=570087735CHA&country_code=COL&lang=es' target='_blank' class='chat-btn-link'>Quiero inscribirme ahora</a><br><br>También puedes tocar el banner naranja en la página principal para más detalles.";
+                    addChatMsg(reply, 'bot');
+                    return;
+                }
+
+                // 2. SISTEMA DE PUNTUACIÓN DE NECESIDADES (BOT INTELIGENTE)
+                const cleanTxt = txt.replace(/[¿?¡!.,]/g, ' '); 
+                const stopWords = ['que', 'para', 'como', 'con', 'por', 'los', 'las', 'del', 'una', 'uno', 'me', 'mi', 'te', 'se', 'lo', 'la', 'un', 'el', 'en', 'es', 'al', 'su', 'de', 'y', 'o', 'a'];
+                const userWords = cleanTxt.split(/\s+/).filter(w => w.length > 2 && !stopWords.includes(w));
+                
+                if(userWords.length === 0) {
+                    addChatMsg("Por favor, dame un poco más de contexto sobre lo que sientes o buscas.", 'bot');
+                    return;
+                }
+
+                let highestScore = 0;
+                let bestMatches = [];
+
+                products.forEach(p => {
+                    let score = 0;
+                    userWords.forEach(word => {
+                        if (p.keywords.some(kw => kw === word || kw.includes(word) || word.includes(kw))) {
+                            score += 2; 
+                        }
+                        if (p.name.toLowerCase().includes(word)) {
+                            score += 3; 
+                        }
+                    });
+                    
+                    if (score > 0) {
+                        if (score > highestScore) {
+                            highestScore = score;
+                            bestMatches = [p];
+                        } else if (score === highestScore) {
+                            bestMatches.push(p);
+                        }
+                    }
+                });
+
+                let reply = "";
+                if (highestScore > 0) {
+                    const prod = bestMatches[0];
+                    reply = `He analizado tus síntomas/necesidad y el producto indicado para ti es **${prod.name}**, ya que ${prod.detailed_benefit}<br><br>Para un trato más directo, escríbele a tu asesor Adrián al WhatsApp **+58 412-9880606**.`;
+                    
+                    if(bestMatches.length > 1) {
+                        const prod2 = bestMatches[1];
+                        reply = `He analizado tu caso. Tienes opciones excelentes: **${prod.name}** (${prod.detailed_benefit}) o también **${prod2.name}**.<br><br>Como cada cuerpo es distinto, te sugiero confirmarlo con Adrián al WhatsApp **+58 412-9880606**.`;
+                    }
+                } else {
+                    reply = "Esa es una condición bastante específica. Para asegurarme de darte la mejor recomendación nutricional, te sugiero que te comuniques directamente con el experto Adrián Canache al WhatsApp **+58 412-9880606** para una asesoría personalizada.";
+                }
+
+                addChatMsg(reply, 'bot');
+            }, 800);
+        }
+
+        function addChatMsg(text, type) {
+            const body = document.getElementById('chat-body');
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            body.appendChild(div);
+            body.scrollTop = body.scrollHeight;
+        }
+    </script>
+</body>
+</html>
